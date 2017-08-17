@@ -205,7 +205,7 @@ namespace Hurricane.Music.AudioEngine
             set { SetProperty(value, ref _isEnabled); }
         }
 
-        public Equalizer MusicEqualizer { get; set; }
+        public CSCore.Streams.Effects.Equalizer MusicEqualizer { get; set; }
 
         public EqualizerSettings EqualizerSettings
         {
@@ -296,7 +296,7 @@ namespace Hurricane.Music.AudioEngine
             track.IsOpened = true;
             CurrentTrack = track;
             var t = Task.Run(() => track.Load());
-            Equalizer equalizer;
+            CSCore.Streams.Effects.Equalizer equalizer;
 
             var result = await SetSoundSource(track);
             switch (result.State)
@@ -323,7 +323,7 @@ namespace Hurricane.Music.AudioEngine
             }
 
             SoundSource = SoundSource
-                .AppendSource(x => Equalizer.Create10BandEqualizer(x.ToSampleSource()), out equalizer)
+                .AppendSource(x => CSCore.Streams.Effects.Equalizer.Create10BandEqualizer(x.ToSampleSource()), out equalizer)
                 .AppendSource(x => new SingleBlockNotificationStream(x), out _singleBlockNotificationStream)
                 .AppendSource(x => new SimpleNotificationSource(x) {Interval = 100}, out _simpleNotificationSource)
                 .ToWaveSource(Settings.WaveSourceBits);

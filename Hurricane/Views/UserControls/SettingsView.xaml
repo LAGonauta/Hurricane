@@ -125,10 +125,10 @@
                                           HorizontalAlignment="Left"
                                           SelectedIndex="{Binding Config.WaveSourceBits,
                                                                   Converter={StaticResource BitrateToIndexConverter}}">
-                                    <ComboBoxItem Content="8 Bits" />
-                                    <ComboBoxItem Content="16 Bits" />
-                                    <ComboBoxItem Content="24 Bits" />
-                                    <ComboBoxItem Content="32 Bits" />
+                                    <ComboBoxItem Content="8 Bits (PCM)" />
+                                    <ComboBoxItem Content="16 Bits (PCM)" />
+                                    <ComboBoxItem Content="24 Bits (PCM)" />
+                                    <ComboBoxItem Content="32 Bits (float)" />
                                 </ComboBox>
                             </StackPanel>
                             <StackPanel Margin="0,15,0,0" Orientation="Vertical">

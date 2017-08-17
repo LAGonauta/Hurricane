@@ -313,7 +313,7 @@ namespace Hurricane.Music.AudioEngine
                     return false;
             }
 
-            if (Settings.SampleRate == -1 && SoundSource.WaveFormat.SampleRate < 44100)
+            if (Settings.SampleRate == -1 && (SoundSource.WaveFormat.SampleRate < 44100 && Settings.SoundOutMode != SoundOutMode.OpenAL))
             {
                 SoundSource = SoundSource.ChangeSampleRate(44100);
             }

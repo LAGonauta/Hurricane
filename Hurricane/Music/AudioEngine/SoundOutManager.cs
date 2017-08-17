@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Threading;
 using CSCore.CoreAudioAPI;
 using CSCore.DirectSound;
+using CSCore.SoundOut.AL;
 using CSCore.SoundOut;
 using Hurricane.Music.Data;
 using Hurricane.Settings;
@@ -76,6 +77,33 @@ namespace Hurricane.Music.AudioEngine
                 }
             }
 
+            if (settings.SoundOutMode == SoundOutMode.OpenAL)
+            {
+                var devices = ALDevice.EnumerateALDevices();
+                if (devices.Length == 0)
+                {
+                    settings.SoundOutMode = SoundOutMode.WASAPI;
+                    return GetNewSoundSource();
+                }
+
+                ALDevice selectedALDevice;
+                if (settings.SoundOutDeviceID == DefaultDevicePlaceholder)
+                {
+                    selectedALDevice = ALDevice.DefaultDevice;
+                }
+                else
+                {
+                    selectedALDevice = devices.FirstOrDefault(x => x.Name == settings.SoundOutDeviceID);
+                    if (selectedALDevice == null)
+                    {
+                        settings.SoundOutDeviceID = DefaultDevicePlaceholder;
+                        return GetNewSoundSource();
+                    }
+                }
+
+                _currentDeviceId = selectedALDevice.Name;
+                return new ALSoundOut { Device = selectedALDevice, Latency = settings.Latency };
+            }
 
             if (settings.SoundOutMode == SoundOutMode.DirectSound)
             {
@@ -206,6 +234,29 @@ namespace Hurricane.Music.AudioEngine
                 CheckDefaultAudioDevice(directSoundItem);
 
                 result.Add(directSoundItem);
+
+                var openalSoundDevices = ALDevice.EnumerateALDevices();
+                var openalSoundItem = new SoundOutRepresenter(deviceId =>
+                {
+                    var device =
+                    openalSoundDevices
+                        .FirstOrDefault(x => x.ToString() == deviceId);
+                    return device == null ? null : new AudioDevice(device.Name, device.Name);
+
+                }) { Name = "OpenAL", SoundOutMode = SoundOutMode.OpenAL};
+
+                foreach (
+                    var device in
+                        openalSoundDevices.Select(
+                            x =>
+                                new AudioDevice(x.Name, x.Name, x == ALDevice.DefaultDevice)))
+                {
+                    openalSoundItem.AudioDevices.Add(device);
+                }
+
+                CheckDefaultAudioDevice(openalSoundItem);
+
+                result.Add(openalSoundItem);
             }
 
             SoundOutList = result;

@@ -215,6 +215,6 @@ namespace Hurricane.Settings
 
     public enum SoundOutMode
     {
-        DirectSound, WASAPI
+        DirectSound, WASAPI, OpenAL
     }
 }
